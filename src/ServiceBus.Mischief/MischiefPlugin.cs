@@ -8,7 +8,7 @@
     /// <summary>
     ///
     /// </summary>
-    public class MischiefPlugin :ServiceBusPlugin
+    public class MischiefPlugin : ServiceBusPlugin
     {
         /// <inheritdoc />
         public override string Name { get; } = nameof(MischiefPlugin);
@@ -21,23 +21,20 @@
         /// <inheritdoc />
         public override Task<Message> BeforeMessageSend(Message message)
         {
-            if (SkipThrowing(out var exception))
+            if (MessageNotSupposedToFail(out var exception) || ShouldStopThrowing())
             {
                 return base.BeforeMessageSend(message);
             }
 
-            if (!message.UserProperties.TryGetValue("exception-message", out var msg))
-            {
-                msg = $"Exception of type '{exception}' was thrown.";
-            }
+            var msg = message.UserProperties["exception-message"];
 
             switch (exception)
             {
                 case nameof(ServiceBusTimeoutException):
-// Naive method
-//                    var constructor = typeof(ServiceBusTimeoutException).GetConstructor(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new []{typeof(string)}, null);
-//                    var instance = (ServiceBusTimeoutException)constructor.Invoke(new object[] {"test"});
-//                    throw instance;
+                    // Naive method
+                    //                    var constructor = typeof(ServiceBusTimeoutException).GetConstructor(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new []{typeof(string)}, null);
+                    //                    var instance = (ServiceBusTimeoutException)constructor.Invoke(new object[] {"test"});
+                    //                    throw instance;
 
                     var creator = ObjectCreation.GetCreator<ServiceBusTimeoutException>();
                     throw creator(msg);
@@ -49,9 +46,18 @@
                     throw new Exception($"Unknown Service Bus exception of type '{exception}' was requested.");
             }
 
-            bool SkipThrowing(out object ex)
+            bool MessageNotSupposedToFail(out object ex)
             {
                 return !message.UserProperties.TryGetValue("exception-to-throw", out ex);
+            }
+
+            bool ShouldStopThrowing()
+            {
+                var timesToThrow = (int)message.UserProperties["times-to-throw"];
+
+                message.UserProperties["times-to-throw"] = timesToThrow - 1;
+
+                return timesToThrow <= 0;
             }
         }
     }

@@ -17,7 +17,7 @@
 
             var exception = await Assert.ThrowsAsync<ServiceBusTimeoutException>(() => plugin.BeforeMessageSend(message));
 
-            Assert.Equal("Exception of type 'ServiceBusTimeoutException' was thrown.", exception.Message);
+            Assert.Equal("Simulated exception of type 'ServiceBusTimeoutException' was thrown.", exception.Message);
         }
 
         [Fact]
@@ -30,7 +30,7 @@
 
             var exception = await Assert.ThrowsAsync<ServerBusyException>(() => plugin.BeforeMessageSend(message));
 
-            Assert.Equal("Exception of type 'ServerBusyException' was thrown.", exception.Message);
+            Assert.Equal("Simulated exception of type 'ServerBusyException' was thrown.", exception.Message);
         }
 
         [Fact]
@@ -44,6 +44,19 @@
             var exception = await Assert.ThrowsAsync<ServerBusyException>(() => plugin.BeforeMessageSend(message));
 
             Assert.Equal("I'm busy!", exception.Message);
+        }
+
+        [Fact]
+        public async Task Can_throw_the_requested_number_of_times()
+        {
+            var plugin = new MischiefPlugin();
+            var message = new Message();
+
+            message.WillThrow<ServerBusyException>(numberOfFailures: 2);
+
+            await Assert.ThrowsAsync<ServerBusyException>(() => plugin.BeforeMessageSend(message));
+            await Assert.ThrowsAsync<ServerBusyException>(() => plugin.BeforeMessageSend(message));
+            await plugin.BeforeMessageSend(message);
         }
 
         [Fact]
