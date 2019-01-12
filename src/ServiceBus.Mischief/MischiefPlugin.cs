@@ -36,12 +36,12 @@
 
             switch (exception)
             {
-                case nameof(ServiceBusTimeoutException):
-                    // Naive method
-                    //                    var constructor = typeof(ServiceBusTimeoutException).GetConstructor(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new []{typeof(string)}, null);
-                    //                    var instance = (ServiceBusTimeoutException)constructor.Invoke(new object[] {"test"});
-                    //                    throw instance;
+                // Naive method
+                // var constructor = typeof(ServiceBusTimeoutException).GetConstructor(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new []{typeof(string)}, null);
+                // var instance = (ServiceBusTimeoutException)constructor.Invoke(new object[] {"test"});
+                // throw instance;
 
+                case nameof(ServiceBusTimeoutException):
                     throw ObjectCreation.CreateInstanceUsingLambdaExpression<ServiceBusTimeoutException>(msg);
 
                 case nameof(ServerBusyException):
@@ -53,9 +53,11 @@
                 case nameof(MessageSizeExceededException):
                     throw ObjectCreation.CreateInstanceUsingLambdaExpression<ServiceBusCommunicationException>(msg);
 
+                // TODO: verify when/how this is possible to be thrown
                 case nameof(SessionLockLostException):
                     throw ObjectCreation.CreateInstanceUsingLambdaExpression<SessionLockLostException>(msg);
 
+                // TODO: verify when/how this is possible to be thrown
                 case nameof(SessionCannotBeLockedException):
                     throw ObjectCreation.CreateInstanceUsingLambdaExpression<SessionCannotBeLockedException>(msg);
 
@@ -65,6 +67,7 @@
                 case nameof(MessagingEntityDisabledException):
                     throw ObjectCreation.CreateInstanceUsingLambdaExpression<MessagingEntityDisabledException>(msg);
 
+                // TODO: verify when/how this is possible to be thrown
                 case nameof(MessagingEntityAlreadyExistsException):
                     throw ObjectCreation.CreateInstanceUsingLambdaExpression<MessagingEntityAlreadyExistsException>(msg);
 
@@ -77,7 +80,9 @@
                 case nameof(QuotaExceededException):
                     throw ObjectCreation.CreateInstanceUsingLambdaExpression<QuotaExceededException>(msg);
 
-                //MessageLockLostException
+                // TODO: verify when/how this is possible to be thrown
+                case nameof(MessageLockLostException):
+                    throw ObjectCreation.CreateInstanceUsingLambdaExpression<MessageLockLostException>(msg);
 
                 default:
                     throw new Exception($"Unknown Service Bus exception of type '{exception}' was requested.");

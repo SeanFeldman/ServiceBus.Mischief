@@ -7,7 +7,7 @@
     using Microsoft.Azure.ServiceBus.Core;
     using Xunit;
 
-    public class Test
+    public class When_using_plugin
     {
         [Fact]
         public async Task Can_throw_ServiceBusTimeoutException()
@@ -15,7 +15,7 @@
             var plugin = new MischiefPlugin();
             var message = new Message();
 
-            message.WillThrow<ServiceBusTimeoutException>();
+            message.WillThrowServiceBusTimeoutException();
 
             var exception = await Assert.ThrowsAsync<ServiceBusTimeoutException>(() => plugin.BeforeMessageSend(message));
 
@@ -28,7 +28,7 @@
             var plugin = new MischiefPlugin();
             var message = new Message();
 
-            message.WillThrow<ServerBusyException>();
+            message.WillThrowServerBusyException();
 
             var exception = await Assert.ThrowsAsync<ServerBusyException>(() => plugin.BeforeMessageSend(message));
 
@@ -36,12 +36,12 @@
         }
 
         [Fact]
-        public async Task Can_throw_custom_exception_message()
+        public async Task Can_throw_with_custom_exception_message()
         {
             var plugin = new MischiefPlugin();
             var message = new Message();
 
-            message.WillThrow<ServerBusyException>("I'm busy!");
+            message.WillThrowServerBusyException("I'm busy!");
 
             var exception = await Assert.ThrowsAsync<ServerBusyException>(() => plugin.BeforeMessageSend(message));
 
@@ -54,7 +54,7 @@
             var plugin = new MischiefPlugin();
             var message = new Message();
 
-            message.WillThrow<ServerBusyException>(numberOfFailures: 2);
+            message.WillThrowServerBusyException(numberOfFailures: 2);
 
             await Assert.ThrowsAsync<ServerBusyException>(() => plugin.BeforeMessageSend(message));
             await Assert.ThrowsAsync<ServerBusyException>(() => plugin.BeforeMessageSend(message));
@@ -62,15 +62,15 @@
         }
 
         [Fact]
-        public async Task Can_delay_operation()
+        public async Task Can_delay()
         {
             var plugin = new MischiefPlugin();
             var message = new Message();
 
             var delay3secs = TimeSpan.FromSeconds(3);
 
-            message.DelayWith(delay3secs);
-            message.WillThrow<ServerBusyException>();
+            message.WillBeDelayedBy(delay3secs);
+            message.WillThrowServerBusyException();
 
             var stopwatch = Stopwatch.StartNew();
             await Assert.ThrowsAsync<ServerBusyException>(() => plugin.BeforeMessageSend(message));
@@ -79,7 +79,7 @@
         }
 
         [Fact]
-        public async Task Real_use()
+        public async Task Can_use_with_real_sender()
         {
             var plugin = new MischiefPlugin();
 
@@ -87,7 +87,7 @@
             sender.RegisterPlugin(plugin);
 
             var message = new Message();
-            message.WillThrow<ServerBusyException>("I'm busy!");
+            message.WillThrowServerBusyException("I'm busy!");
 
             var exception = await Assert.ThrowsAsync<ServerBusyException>(() => sender.SendAsync(message));
 
