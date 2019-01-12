@@ -42,40 +42,40 @@
                     //                    var instance = (ServiceBusTimeoutException)constructor.Invoke(new object[] {"test"});
                     //                    throw instance;
 
-                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<ServiceBusTimeoutException>(msg);
+                    throw ObjectCreation.CreateInstanceUsingLambdaExpression<ServiceBusTimeoutException>(msg);
 
                 case nameof(ServerBusyException):
-                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<ServerBusyException>(msg);
+                    throw ObjectCreation.CreateInstanceUsingLambdaExpression<ServerBusyException>(msg);
 
                 case nameof(ServiceBusCommunicationException):
-                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<ServiceBusCommunicationException>(msg);
+                    throw ObjectCreation.CreateInstanceUsingLambdaExpression<ServiceBusCommunicationException>(msg);
 
                 case nameof(MessageSizeExceededException):
-                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<ServiceBusCommunicationException>(msg);
+                    throw ObjectCreation.CreateInstanceUsingLambdaExpression<ServiceBusCommunicationException>(msg);
 
                 case nameof(SessionLockLostException):
-                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<SessionLockLostException>(msg);
+                    throw ObjectCreation.CreateInstanceUsingLambdaExpression<SessionLockLostException>(msg);
 
                 case nameof(SessionCannotBeLockedException):
-                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<SessionCannotBeLockedException>(msg);
+                    throw ObjectCreation.CreateInstanceUsingLambdaExpression<SessionCannotBeLockedException>(msg);
 
                 case nameof(MessagingEntityNotFoundException):
-                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<MessagingEntityNotFoundException>(msg);
+                    throw ObjectCreation.CreateInstanceUsingLambdaExpression<MessagingEntityNotFoundException>(msg);
 
                 case nameof(MessagingEntityDisabledException):
-                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<MessagingEntityDisabledException>(msg);
+                    throw ObjectCreation.CreateInstanceUsingLambdaExpression<MessagingEntityDisabledException>(msg);
 
                 case nameof(MessagingEntityAlreadyExistsException):
-                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<MessagingEntityAlreadyExistsException>(msg);
+                    throw ObjectCreation.CreateInstanceUsingLambdaExpression<MessagingEntityAlreadyExistsException>(msg);
 
                 case nameof(UnauthorizedException):
-                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<UnauthorizedException>(msg);
+                    throw ObjectCreation.CreateInstanceUsingLambdaExpression<UnauthorizedException>(msg);
 
                 case nameof(MessageNotFoundException):
-                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<MessageNotFoundException>(msg);
+                    throw ObjectCreation.CreateInstanceUsingLambdaExpression<MessageNotFoundException>(msg);
 
                 case nameof(QuotaExceededException):
-                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<QuotaExceededException>(msg);
+                    throw ObjectCreation.CreateInstanceUsingLambdaExpression<QuotaExceededException>(msg);
 
                 //MessageLockLostException
 
@@ -130,7 +130,7 @@
                     for (var i = 0; i < paramsInfo.Length; i++)
                     {
                         Expression index = Expression.Constant(i);
-                        Type paramType = paramsInfo[i].ParameterType;
+                        var paramType = paramsInfo[i].ParameterType;
                         Expression paramAccessorExp = Expression.ArrayIndex(param, index);
                         Expression paramCastExp = Expression.Convert(paramAccessorExp, paramType);
                         argsExpressions[i] = paramCastExp;
@@ -154,7 +154,7 @@
         }
 
         /// <summary>Create instance of T with parameters using ConstructorInfo.Invoke</summary>
-        public static T CreateInstanceUsingLamdaExpression<T>(params object[] args)
+        public static T CreateInstanceUsingLambdaExpression<T>(params object[] args)
         {
             var createdActivator = GetCreator<T>();
             return createdActivator(args);
