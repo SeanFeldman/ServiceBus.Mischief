@@ -1,5 +1,7 @@
 ﻿namespace Microsoft.Azure.ServiceBus
 {
+    using System;
+
     /// <summary>
     ///
     /// </summary>
@@ -27,6 +29,16 @@
             }
 
             message.UserProperties["times-to-throw"] = numberOfFailures;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="timeToDelay"></param>
+        public static void DelayWith(this Message message, TimeSpan timeToDelay)
+        {
+            message.UserProperties["delay-with"] = timeToDelay;
         }
     }
 }

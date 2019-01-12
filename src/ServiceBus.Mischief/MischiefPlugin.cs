@@ -4,6 +4,7 @@
     using System.Linq.Expressions;
     using System.Threading.Tasks;
     using Core;
+    using Management;
 
     /// <summary>
     ///
@@ -19,11 +20,16 @@
         delegate T Creator<T>(params object[] parameters);
 
         /// <inheritdoc />
-        public override Task<Message> BeforeMessageSend(Message message)
+        public override async Task<Message> BeforeMessageSend(Message message)
         {
+            if (message.UserProperties.TryGetValue("delay-with", out var delay))
+            {
+                await Task.Delay((TimeSpan) delay);
+            }
+
             if (MessageNotSupposedToFail(out var exception) || ShouldStopThrowing())
             {
-                return base.BeforeMessageSend(message);
+                return await base.BeforeMessageSend(message);
             }
 
             var msg = message.UserProperties["exception-message"];
@@ -36,11 +42,42 @@
                     //                    var instance = (ServiceBusTimeoutException)constructor.Invoke(new object[] {"test"});
                     //                    throw instance;
 
-                    var creator = ObjectCreation.GetCreator<ServiceBusTimeoutException>();
-                    throw creator(msg);
+                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<ServiceBusTimeoutException>(msg);
 
                 case nameof(ServerBusyException):
                     throw ObjectCreation.CreateInstanceUsingLamdaExpression<ServerBusyException>(msg);
+
+                case nameof(ServiceBusCommunicationException):
+                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<ServiceBusCommunicationException>(msg);
+
+                case nameof(MessageSizeExceededException):
+                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<ServiceBusCommunicationException>(msg);
+
+                case nameof(SessionLockLostException):
+                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<SessionLockLostException>(msg);
+
+                case nameof(SessionCannotBeLockedException):
+                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<SessionCannotBeLockedException>(msg);
+
+                case nameof(MessagingEntityNotFoundException):
+                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<MessagingEntityNotFoundException>(msg);
+
+                case nameof(MessagingEntityDisabledException):
+                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<MessagingEntityDisabledException>(msg);
+
+                case nameof(MessagingEntityAlreadyExistsException):
+                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<MessagingEntityAlreadyExistsException>(msg);
+
+                case nameof(UnauthorizedException):
+                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<UnauthorizedException>(msg);
+
+                case nameof(MessageNotFoundException):
+                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<MessageNotFoundException>(msg);
+
+                case nameof(QuotaExceededException):
+                    throw ObjectCreation.CreateInstanceUsingLamdaExpression<QuotaExceededException>(msg);
+
+                //MessageLockLostException
 
                 default:
                     throw new Exception($"Unknown Service Bus exception of type '{exception}' was requested.");

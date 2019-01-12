@@ -1,5 +1,7 @@
 ﻿namespace ServiceBus.Mischief.Tests
 {
+    using System;
+    using System.Diagnostics;
     using System.Threading.Tasks;
     using Microsoft.Azure.ServiceBus;
     using Microsoft.Azure.ServiceBus.Core;
@@ -57,6 +59,23 @@
             await Assert.ThrowsAsync<ServerBusyException>(() => plugin.BeforeMessageSend(message));
             await Assert.ThrowsAsync<ServerBusyException>(() => plugin.BeforeMessageSend(message));
             await plugin.BeforeMessageSend(message);
+        }
+
+        [Fact]
+        public async Task Can_delay_operation()
+        {
+            var plugin = new MischiefPlugin();
+            var message = new Message();
+
+            var delay3secs = TimeSpan.FromSeconds(3);
+
+            message.DelayWith(delay3secs);
+            message.WillThrow<ServerBusyException>();
+
+            var stopwatch = Stopwatch.StartNew();
+            await Assert.ThrowsAsync<ServerBusyException>(() => plugin.BeforeMessageSend(message));
+            Console.WriteLine(stopwatch.ElapsedMilliseconds);
+            Assert.InRange(stopwatch.ElapsedMilliseconds, delay3secs.TotalMilliseconds, delay3secs.Add(TimeSpan.FromSeconds(0.5)).TotalMilliseconds);
         }
 
         [Fact]
