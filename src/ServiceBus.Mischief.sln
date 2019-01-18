@@ -5,7 +5,13 @@ VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBus.Mischief", "ServiceBus.Mischief\ServiceBus.Mischief.csproj", "{5B09D75C-3554-4A8B-8DE2-C593CEF79656}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceBus.Mischief.Tests", "ServiceBus.Mischief.Tests\ServiceBus.Mischief.Tests.csproj", "{61CDEDB3-3F8F-4554-AB47-CCF7CEA4EC77}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServiceBus.Mischief.Tests", "ServiceBus.Mischief.Tests\ServiceBus.Mischief.Tests.csproj", "{61CDEDB3-3F8F-4554-AB47-CCF7CEA4EC77}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution files", "Solution files", "{55C62386-1136-4F58-9F54-3F08279F8123}"
+	ProjectSection(SolutionItems) = preProject
+		..\appveyor.yml = ..\appveyor.yml
+		..\README.md = ..\README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
